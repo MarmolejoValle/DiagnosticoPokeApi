@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="d-flex flex-column justify-content-center align-items-center bg-dark text-white vh-100 p-3">
+    
+        <div class="mb-4 text-center">
+            <h1 class="fw-bold fs-2">PokeApi</h1>
+        </div>
+    
+        <div id="carouselExample" class="carousel slide w-100" data-bs-ride="carousel">
+            <div class="carousel-inner" id="pokemons">
+            </div>
+    
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+    
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    
+    
+    </div>
+    
+    <script>
+        let p = 1;
+        let pokemosTotales = 0 ;
+        let contentPokemon = document.getElementById("pokemons");
+        async function pagPokemons(pag) {
+            console.log(pag);
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon?offset=${pag}&limit=10`)
+                .then(response => response.json())
+                .then(data => {
+                    pokemosTotales += data.results.length -1;
+                    
+                    data.results.forEach((element, i) => {
+                        fetch(element.url)
+                            .then(response => response.json())
+                            .then(poke => {
+                                if(i == 0 && pag == 1){
+                                    contentPokemon.innerHTML += `
+                     <div class="carousel-item active">
+                    <img src="${poke.sprites.front_default}" class="d-block w-100" alt="...">
+                  </div>
+                    `;
+                                    return;
+                                }
+                                contentPokemon.innerHTML += `
+                     <div class="carousel-item">
+                    <img src="${poke.sprites.front_default}" class="d-block w-100" alt="...">
+                  </div>
+                    `;
+                    });
+                    });
+                });
+                console.log(pokemosTotales);
+
+        }
+
+
+        pagPokemons(1);
+
+const carousel = document.querySelector('#carouselExample');
+
+carousel.addEventListener('slid.bs.carousel', (event) => {
+    const activeItem = carousel.querySelector('.carousel-item.active');
+    console.log(event.to)
+    if(pokemosTotales == event.to){
+        p = p + 1;
+        pagPokemons(p);
+    }
+});
+    </script>
+</body>
+
+</html>
